@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import { Link } from 'react-router-dom';
 
 class RoomList extends Component {
   constructor(props) {
@@ -20,9 +19,11 @@ class RoomList extends Component {
   }
 
   createRoom(e) {
+    e.preventDefault();
     this.roomsRef.push({
       name: this.state.newRoomName
     });
+    e.target.reset();
   }
 
   handleNewChatRoomName(e) {
@@ -34,7 +35,7 @@ class RoomList extends Component {
       <section className="chatRooms">
         <section className="chatRoomList">
           {this.state.rooms.map( (room, index) =>
-            <button onClick={ (e) => this.props.setRoom(room.name) }>{room.name}</button>
+            <button key={room.name} onClick={ () => this.props.setRoom(room) }>{room.name}</button>
           )}
         </section>
         <form className="newRoomForm" onSubmit={ (e) => this.createRoom(e) } >

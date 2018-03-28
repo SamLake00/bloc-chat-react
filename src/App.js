@@ -3,7 +3,7 @@ import './App.css';
 import * as firebase from 'firebase';
 import RoomList from './components/RoomList.js';
 import MessageList from './components/MessageList.js';
-import { Route, Link } from 'react-router-dom';
+import User from './components/User.js';
 
 // Initialize Firebase
   var config = {
@@ -21,30 +21,31 @@ class App extends Component {
     super(props);
     this.state = {
       activeRoom: null,
-      messages: [],
-      activeMessageList: []
+      activeUser: []
     }
   }
 
   setRoom(room) {
-    this.setState({ activeRoom: room });
-    console.log( this.state.activeRoom );
-    this.setState({ activeMessageList: this.state.messages.filter( message => message.roomId === this.state.activeRoom ) });
-    console.log( this.state.activeMessageList );
+    this.setState({ activeRoom: room.name });
+    //console.log( this.state.activeRoom );
   }
 
-  setMessageList(messages) {
-    this.setState({ messages: messages });
-    console.log( this.state.messages );
-    console.log( '^ set all messages' );
+  setUser(user) {
+    this.setState({ activeUser: user });
+    //console.log( this.state.activeUser );
   }
 
   render() {
     return (
-      <section className="App">
-        <RoomList firebase={firebase} activeRoom = { this.state.activeRoom } messages = { this.state.messages }  setRoom = { (room) => this.setRoom(room) } />
-        <MessageList firebase={firebase} activeRoom = { this.state.activeRoom } activeMessageList = { this.state.activeMessageList } setMessageList = { (messages) => this.setMessageList(messages)} />
+      <div className="App">
+      <aside className="rooms">
+        <RoomList firebase={firebase} activeRoom = { this.state.activeRoom } setRoom = {this.setRoom.bind(this) } />
+      </aside>
+      <section className="everything else">
+        <MessageList firebase={firebase} activeRoom = { this.state.activeRoom } activeUser = { this.state.activeUser } />
+        <User firebase={firebase} setUser = { (user) => this.setUser(user) }/>
       </section>
+      </div>
     );
   }
 }

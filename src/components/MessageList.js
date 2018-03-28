@@ -6,7 +6,7 @@ class MessageList extends Component {
     this.state = {
       messages: [],
       newMessage: '',
-      activeMessageList: this.props.activeMessageList
+      activeMessageList: []
     };
     this.messagesRef = this.props.firebase.database().ref('messages');
   }
@@ -17,62 +17,50 @@ class MessageList extends Component {
       message.key = snapshot.key;
       this.setState({ messages: this.state.messages.concat( message ) });
     });
-    this.props
   }
 
-  componentWillReceiveProps(activeRoom) {
+  componentWillReceiveProps(nextProps) {
+    this.updateActiveMessageList(nextProps.activeRoom);
+  }
+
+  updateActiveMessageList(activeRoom) {
     if (!activeRoom) {return}
     this.setState({ activeMessageList: this.state.messages.filter( message => message.roomId === this.props.activeRoom ) });
   }
 
   createMessage(e) {
-    this.roomsRef.push({
+    e.preventDefault();
+    this.messagesRef.push({
       content: this.state.newMessage,
-      username: "samuel",
+      username: this.props.activeUser.displayName,
       sentAt: this.props.firebase.database.ServerValue.TIMESTAMP,
-      roomID: this.props.activeRoom
+      roomId: this.props.activeRoom
     });
+    this.updateActiveMessageList(this.props.activeRoom);
+    /*console.log("createMessage");
+    console.log( this.state.newMessage );*/
+    e.target.reset();
   }
 
   handleNewMessage(e) {
     this.setState({ newMessage: e.target.value });
-    //this.props.setMessageList( this.state.messages );
-    //this.props.setMessageList( this.state.messages );
-    /*this.props.setMessageList(this.state.messages);
-    console.log( this.state.messages[1] );
-    console.log( this.state.messages[1].content );
-    console.log( this.state.messages[1].key );
-    console.log( this.state.messages[1].username );
-    console.log( this.state.messages[1].sentAt );
-    console.log( this.state.messages[1].roomId );
-    console.log( this.props.activeRoom );
-    console.log( this.state.activeMessageList );
-    console.log( this.state.messages );*/
+    /*console.log( this.state.newMessage );
+    console.log( this.props.activeUser );*/
   }
-
-  /*setActiveMessageList() {
-    this.setState({ activeMessageList: this.state.messages.filter( message => message.roomId === this.props.activeRoom ) });
-    console.log( this.state.messages );
-    console.log( '^ all messages');
-    console.log( this.state.activeMessageList );
-    console.log( '^ active messages' );
-    console.log( this.props.activeRoom );
-    console.log( '^ active room' );
-  }*/
 
   render() {
     return (
       <section className="listofMessages">
         <form className="newMessageForm" onSubmit={ (e) => this.createMessage(e) } >
           <input type="text" onChange={ (e) => this.handleNewMessage(e) } />
-          <input type="submit" value="Send" />
+          <input type="submit" value="Send" onSubmit={ (e) => this.createMessage(e) } />
         </form>
         <section>
           {this.state.activeMessageList.map( (message, index) =>
             <div className="messages">
-              <li>{message.content}</li>
-              <li>{message.username}</li>
-              <li>{message.sentAt}</li>
+              <li key={message.content}>{message.content}</li>
+              <li key={message.username}>{message.username}</li>
+              <li key={message.sentAt}>{message.sentAt}</li>
             </div>
           )}
         </section>
