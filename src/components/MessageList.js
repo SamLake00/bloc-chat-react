@@ -13,7 +13,7 @@ class MessageList extends Component {
 
   componentDidMount() {
     this.messagesRef.on('child_added', snapshot => {
-      const message = snapshot.val();
+      let message = snapshot.val();
       message.key = snapshot.key;
       this.setState({ messages: this.state.messages.concat( message ) });
     });
@@ -30,6 +30,7 @@ class MessageList extends Component {
 
   createMessage(e) {
     e.preventDefault();
+    console.log( this.state.newMessage );
     this.messagesRef.push({
       content: this.state.newMessage,
       username: this.props.activeUser.displayName,
@@ -42,10 +43,13 @@ class MessageList extends Component {
     e.target.reset();
   }
 
+  componentDid
+
   handleNewMessage(e) {
     this.setState({ newMessage: e.target.value });
-    /*console.log( this.state.newMessage );
-    console.log( this.props.activeUser );*/
+
+    console.log( this.state.newMessage );
+    //console.log( this.props.activeUser );
   }
 
   render() {
