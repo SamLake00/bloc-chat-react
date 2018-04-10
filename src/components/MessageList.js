@@ -25,29 +25,24 @@ class MessageList extends Component {
 
   updateActiveMessageList(activeRoom) {
     if (!activeRoom) {return}
-    this.setState({ activeMessageList: this.state.messages.filter( message => message.roomId === this.props.activeRoom ) });
+    this.setState({ activeMessageList: this.state.messages.filter( message => message.roomId === activeRoom.name ) });
   }
 
-  createMessage(e) {
-    e.preventDefault();
-    console.log( this.state.newMessage );
+  createMessage(newMessage) {
+    //console.log( this.state.newMessage );
+    if (!this.props.activeRoom || !newMessage) { return }
     this.messagesRef.push({
-      content: this.state.newMessage,
+      content: newMessage,
       username: this.props.activeUser.displayName,
       sentAt: this.props.firebase.database.ServerValue.TIMESTAMP,
-      roomId: this.props.activeRoom
-    });
-    this.updateActiveMessageList(this.props.activeRoom);
+      roomId: this.props.activeRoom.name
+    }, () => {this.updateActiveMessageList(this.props.activeRoom) });
     /*console.log("createMessage");
     console.log( this.state.newMessage );*/
-    e.target.reset();
   }
-
-  componentDid
 
   handleNewMessage(e) {
     this.setState({ newMessage: e.target.value });
-
     console.log( this.state.newMessage );
     //console.log( this.props.activeUser );
   }
@@ -55,12 +50,12 @@ class MessageList extends Component {
   render() {
     return (
       <section className="listofMessages">
-        <form className="newMessageForm" onSubmit={ (e) => this.createMessage(e) } >
+        <form className="newMessageForm" onSubmit={ (e) => { e.preventDefault(); e.target.reset(); this.createMessage(this.state.newMessage) } }>
           <input type="text" onChange={ (e) => this.handleNewMessage(e) } />
-          <input type="submit" value="Send" onSubmit={ (e) => this.createMessage(e) } />
-        </form>
+          <input type="submit" value="Send" />
+        </form >
         <section>
-          {this.state.activeMessageList.map( (message, index) =>
+          {this.state.activeMessageList.map( message =>
             <div className="messages">
               <li key={message.content}>{message.content}</li>
               <li key={message.username}>{message.username}</li>

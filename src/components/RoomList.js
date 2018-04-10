@@ -28,19 +28,21 @@ class RoomList extends Component {
   }
 
   handleNewChatRoomName(e) {
-    this.setState({ newRoomName: e.target.value });
+    this.setState({newRoomName: e.target.value});
   }
 
   render() {
     return (
-      <section className="chatRooms">
+      <section id="room-component">
         <section className="chatRoomList">
-          {this.state.rooms.map( (room, index) =>
-            <button key={room.name} onClick={ () => this.props.setRoom(room.name) }>{room.name}</button>
+          {this.state.rooms.map( room =>
+            <li key={room.key}>
+              <button onClick={ () => this.props.setRoom(room) }>{room.name}</button>
+            </li>
           )}
         </section>
         <form className="newRoomForm" onSubmit={ (e) => { e.preventDefault(); e.target.reset(); this.createRoom(this.state.newRoomName) } }>
-          <input type="text" onChange={ (e) => this.handleNewChatRoomName(e) } />
+          <input type="text" value={ this.state.newRoomName } onChange={ this.handleNewChatRoomName.bind(this) } placeholder="Create a Room" />
           <input type="submit" />
         </form>
       </section>
